@@ -28,7 +28,7 @@ df["Scaled"] = scaler.fit_transform(df[["Data_Inflasi"]])
 
 # Load model
 model = load_model("model_inflasi.h5")
-seq_len = 1
+seq_len = 12
 
 # Buat data historis untuk evaluasi model
 X_pred = []
