@@ -11,7 +11,7 @@ st.title("📈 Prediksi Inflasi Bulanan Indonesia dengan LSTM")
 # Load Dataset
 @st.cache(allow_output_mutation=True)
 def load_data():
-    df = pd.read_excel("Data Inflasi.xlsx")
+    df = pd.read_excel("Data Inflasi (3).xlsx")
     df["Bulan"] = pd.date_range(start="2003-01-01", periods=len(df), freq="M")
     df.set_index("Bulan", inplace=True)
     return df
