@@ -70,16 +70,20 @@ st.markdown(f"""
 # Plot prediksi vs aktual
 fig = go.Figure()
 
+# Garis AKTUAL - warna biru lembut
 fig.add_trace(go.Scatter(
     x=df_pred.index, y=df_pred["Data_Inflasi"],
     mode='lines+markers',
-    name='Aktual'
+    name='Aktual',
+    line=dict(color='#1f77b4')  # biru klasik
 ))
 
+# Garis PREDIKSI - warna oranye tajam
 fig.add_trace(go.Scatter(
     x=df_pred.index, y=df_pred["Prediksi_Inflasi"],
     mode='lines+markers',
-    name='Prediksi'
+    name='Prediksi',
+    line=dict(color='#ff7f0e')  # oranye terang
 ))
 
 fig.update_layout(
@@ -87,10 +91,12 @@ fig.update_layout(
     xaxis_title="Waktu",
     yaxis_title="Inflasi (%)",
     hovermode="x unified",
-    height=500
+    height=500,
+    template="plotly_dark"  # cocok dengan tema gelap Streamlit
 )
 
 st.plotly_chart(fig, use_container_width=True)
+
 
 # Input jumlah bulan ke depan
 st.subheader("🔮 Prediksi Inflasi Bulan Mendatang")
