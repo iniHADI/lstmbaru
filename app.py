@@ -1,14 +1,16 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
+import os
 from tensorflow.keras.models import load_model
 from sklearn.preprocessing import MinMaxScaler
 import matplotlib.pyplot as plt
+from sklearn.metrics import mean_squared_error
 
 # Judul Aplikasi
 st.title("📈 Prediksi Inflasi Bulanan Indonesia dengan LSTM")
 
-# Load Dataset
+# Fungsi load data dengan cache
 @st.cache_data
 def load_data():
     df = pd.read_excel("Data Inflasi (3).xlsx")
@@ -16,24 +18,35 @@ def load_data():
     df.set_index("Bulan", inplace=True)
     return df
 
+# Load dataset
 df = load_data()
+
+# Cek panjang data minimal
+seq_len = 12
+if len(df) <= seq_len:
+    st.error(f"❌ Data terlalu sedikit. Minimal {seq_len + 1} baris diperlukan. Saat ini hanya {len(df)}.")
+    st.stop()
 
 # Tampilkan data asli
 st.subheader("📊 Data Inflasi Asli")
 st.line_chart(df["Data_Inflasi"])
 
-# Normalisasi
+# Normalisasi data
 scaler = MinMaxScaler()
 df["Scaled"] = scaler.fit_transform(df[["Data_Inflasi"]])
 
+# Validasi file model
+if not os.path.exists("model_inflasi.h5"):
+    st.error("❌ File model_inflasi.h5 tidak ditemukan.")
+    st.stop()
+
 # Load model
 model = load_model("model_inflasi.h5")
-seq_len = 12
 
-# Buat data historis untuk evaluasi model
+# Buat data historis untuk evaluasi
 X_pred = []
 for i in range(len(df) - seq_len):
-    X_pred.append(df["Scaled"].values[i:i+seq_len])
+    X_pred.append(df["Scaled"].values[i:i + seq_len])
 X_pred = np.array(X_pred).reshape(-1, seq_len, 1)
 
 # Prediksi historis
@@ -41,7 +54,11 @@ predictions = model.predict(X_pred)
 df_pred = df.iloc[seq_len:].copy()
 df_pred["Prediksi_Inflasi"] = scaler.inverse_transform(predictions)
 
-# Tampilkan plot aktual vs prediksi
+# Evaluasi model
+mse = mean_squared_error(df_pred["Data_Inflasi"], df_pred["Prediksi_Inflasi"])
+st.write(f"📌 MSE terhadap data historis: `{mse:.4f}`")
+
+# Plot prediksi vs aktual
 st.subheader("📉 Prediksi vs Aktual")
 fig, ax = plt.subplots()
 ax.plot(df_pred.index, df_pred["Data_Inflasi"], label="Aktual")
@@ -51,7 +68,7 @@ ax.set_ylabel("Inflasi (%)")
 ax.legend()
 st.pyplot(fig)
 
-# Input user: berapa bulan ke depan ingin diprediksi
+# Input jumlah bulan ke depan
 st.subheader("🔮 Prediksi Inflasi Bulan Mendatang")
 n_months = st.number_input("Masukkan jumlah bulan ke depan untuk diprediksi:", min_value=1, max_value=36, value=12)
 
@@ -68,7 +85,7 @@ for _ in range(n_months):
 # Kembalikan ke skala asli
 future_preds = scaler.inverse_transform(np.array(future_preds_scaled).reshape(-1, 1))
 
-# Buat tanggal prediksi
+# Buat tanggal-tanggal prediksi
 last_date = df.index[-1]
 future_dates = pd.date_range(start=last_date + pd.DateOffset(months=1), periods=n_months, freq='M')
 
@@ -78,7 +95,7 @@ future_df = pd.DataFrame({
     "Prediksi_Inflasi (%)": future_preds.flatten()
 })
 
-# Tampilkan tabel dan grafik
+# Tampilkan tabel dan grafik hasil prediksi
 st.dataframe(future_df)
 
 fig2, ax2 = plt.subplots()
