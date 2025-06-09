@@ -5,6 +5,7 @@ import os
 from tensorflow.keras.models import load_model
 from sklearn.preprocessing import MinMaxScaler
 import matplotlib.pyplot as plt
+import plotly.graph_objects as go
 from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
 
 # Judul Aplikasi
@@ -67,14 +68,29 @@ st.markdown(f"""
 """)
 
 # Plot prediksi vs aktual
-st.subheader("📉 Prediksi vs Aktual")
-fig, ax = plt.subplots()
-ax.plot(df_pred.index, df_pred["Data_Inflasi"], label="Aktual")
-ax.plot(df_pred.index, df_pred["Prediksi_Inflasi"], label="Prediksi")
-ax.set_xlabel("Waktu")
-ax.set_ylabel("Inflasi (%)")
-ax.legend()
-st.pyplot(fig)
+fig = go.Figure()
+
+fig.add_trace(go.Scatter(
+    x=df_pred.index, y=df_pred["Data_Inflasi"],
+    mode='lines+markers',
+    name='Aktual'
+))
+
+fig.add_trace(go.Scatter(
+    x=df_pred.index, y=df_pred["Prediksi_Inflasi"],
+    mode='lines+markers',
+    name='Prediksi'
+))
+
+fig.update_layout(
+    title="📉 Prediksi vs Aktual Inflasi",
+    xaxis_title="Waktu",
+    yaxis_title="Inflasi (%)",
+    hovermode="x unified",
+    height=500
+)
+
+st.plotly_chart(fig, use_container_width=True)
 
 # Input jumlah bulan ke depan
 st.subheader("🔮 Prediksi Inflasi Bulan Mendatang")
