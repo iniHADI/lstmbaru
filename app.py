@@ -73,7 +73,7 @@ fig = go.Figure()
 # Garis AKTUAL - warna biru lembut
 fig.add_trace(go.Scatter(
     x=df_pred.index, y=df_pred["Data_Inflasi"],
-    mode='lines+markers',
+    mode='lines',
     name='Aktual',
     line=dict(color='#1f77b4')  # biru klasik
 ))
@@ -81,7 +81,7 @@ fig.add_trace(go.Scatter(
 # Garis PREDIKSI - warna oranye tajam
 fig.add_trace(go.Scatter(
     x=df_pred.index, y=df_pred["Prediksi_Inflasi"],
-    mode='lines+markers',
+    mode='lines',
     name='Prediksi',
     line=dict(color='#ff7f0e')  # oranye terang
 ))
