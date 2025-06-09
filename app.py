@@ -104,4 +104,8 @@ ax2.set_title(f"Prediksi Inflasi {n_months} Bulan ke Depan")
 ax2.set_xlabel("Bulan")
 ax2.set_ylabel("Inflasi (%)")
 ax2.grid(True)
+plt.xticks(rotation=45) 
+
+fig2.autofmt_xdate()
+
 st.pyplot(fig2)
