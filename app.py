@@ -5,7 +5,7 @@ import os
 from tensorflow.keras.models import load_model
 from sklearn.preprocessing import MinMaxScaler
 import matplotlib.pyplot as plt
-from sklearn.metrics import mean_squared_error
+from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
 
 # Judul Aplikasi
 st.title("📈 Prediksi Inflasi Bulanan Indonesia dengan LSTM")
@@ -56,7 +56,15 @@ df_pred["Prediksi_Inflasi"] = scaler.inverse_transform(predictions)
 
 # Evaluasi model
 mse = mean_squared_error(df_pred["Data_Inflasi"], df_pred["Prediksi_Inflasi"])
-st.write(f"📌 MSE terhadap data historis: `{mse:.4f}`")
+mae = mean_absolute_error(df_pred["Data_Inflasi"], df_pred["Prediksi_Inflasi"])
+r2 = r2_score(df_pred["Data_Inflasi"], df_pred["Prediksi_Inflasi"])
+
+st.write("📊 **Evaluasi Model Terhadap Data Historis:**")
+st.markdown(f"""
+- ✅ MSE (Mean Squared Error): `{mse:.4f}`
+- ✅ MAE (Mean Absolute Error): `{mae:.4f}`
+- ✅ R² Score: `{r2:.4f}`
+""")
 
 # Plot prediksi vs aktual
 st.subheader("📉 Prediksi vs Aktual")
