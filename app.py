@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 st.title("📈 Prediksi Inflasi Bulanan Indonesia dengan LSTM")
 
 # Load Dataset
-st.cache_data
+@st.cache_data
 def load_data():
     df = pd.read_excel("Data Inflasi (3).xlsx")
     df["Bulan"] = pd.date_range(start="2003-01-01", periods=len(df), freq="M")
